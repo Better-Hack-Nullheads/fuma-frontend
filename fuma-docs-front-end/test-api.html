@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 20px; border: 1px solid #ccc; border-radius: 5px; }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 3px; overflow-x: auto; }
+        button { padding: 10px 20px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+    <h1>Dynamic Documentation API Test</h1>
+    <p>This page tests the backend API endpoints required by the documentation viewer.</p>
+
+    <div class="test-section">
+        <h2>Test 1: Get All Documents</h2>
+        <p>Testing: <code>GET /llmresponse/getall</code></p>
+        <button onclick="testGetAllDocs()">Test Get All Docs</button>
+        <div id="getAllResult"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Test 2: Get Document by ID</h2>
+        <p>Testing: <code>GET /llmresponse/:id</code></p>
+        <input type="text" id="docId" placeholder="Enter document ID" value="test-doc">
+        <button onclick="testGetDocById()">Test Get Document</button>
+        <div id="getDocResult"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Test 3: Health Check</h2>
+        <p>Testing backend availability</p>
+        <button onclick="testHealthCheck()">Test Health Check</button>
+        <div id="healthResult"></div>
+    </div>
+
+    <script>
+        async function testGetAllDocs() {
+            const resultDiv = document.getElementById('getAllResult');
+            resultDiv.innerHTML = '<p>Testing...</p>';
+            
+            try {
+                const response = await fetch('/llmresponse/getall');
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            <h3>✅ Success!</h3>
+                            <p>Status: ${response.status}</p>
+                            <p>Documents found: ${Array.isArray(data) ? data.length : 'Not an array'}</p>
+                            <pre>${JSON.stringify(data, null, 2)}</pre>
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="error">
+                            <h3>❌ Error!</h3>
+                            <p>Status: ${response.status} ${response.statusText}</p>
+                            <pre>${JSON.stringify(data, null, 2)}</pre>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        <h3>❌ Network Error!</h3>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        async function testGetDocById() {
+            const docId = document.getElementById('docId').value;
+            const resultDiv = document.getElementById('getDocResult');
+            resultDiv.innerHTML = '<p>Testing...</p>';
+            
+            try {
+                const response = await fetch(`/llmresponse/${docId}`);
+                const text = await response.text();
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            <h3>✅ Success!</h3>
+                            <p>Status: ${response.status}</p>
+                            <p>Content length: ${text.length} characters</p>
+                            <pre>${text.substring(0, 500)}${text.length > 500 ? '...' : ''}</pre>
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="error">
+                            <h3>❌ Error!</h3>
+                            <p>Status: ${response.status} ${response.statusText}</p>
+                            <pre>${text}</pre>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        <h3>❌ Network Error!</h3>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        async function testHealthCheck() {
+            const resultDiv = document.getElementById('healthResult');
+            resultDiv.innerHTML = '<p>Testing...</p>';
+            
+            try {
+                const response = await fetch('/llmresponse/getall', { method: 'HEAD' });
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            <h3>✅ Backend is available!</h3>
+                            <p>Status: ${response.status}</p>
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="error">
+                            <h3>❌ Backend error!</h3>
+                            <p>Status: ${response.status} ${response.statusText}</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        <h3>❌ Backend unavailable!</h3>
+                        <p>${error.message}</p>
+                        <p>Make sure your backend is running and accessible.</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Auto-run health check on page load
+        window.onload = () => {
+            testHealthCheck();
+        };
+    </script>
+</body>
+</html>

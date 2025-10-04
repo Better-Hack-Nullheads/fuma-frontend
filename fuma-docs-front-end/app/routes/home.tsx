@@ -3,13 +3,19 @@ import { Link } from 'react-router';
 
 export function meta({}: Route.MetaArgs) {
   return [
+<<<<<<< HEAD
     { title: 'AutoDoc - API Documentation Platform' },
     { name: 'description', content: 'Welcome to AutoDoc!' },
+=======
+    { title: 'Dynamic Documentation Viewer' },
+    { name: 'description', content: 'View and browse dynamic MDX documentation from your backend API' },
+>>>>>>> 4e2f2dc (Implement dynamic documentation viewer with MDX support, including sidebar navigation, document fetching from backend API, and error handling. Add new components for document viewing and sidebar, update routing, and enhance README with features and usage instructions.)
   ];
 }
 
 export default function Home() {
   return (
+<<<<<<< HEAD
     <div className="min-h-screen bg-background flex flex-col">
       <header className="border-b border-border">
         <div className="container mx-auto px-4 py-4">
@@ -65,5 +71,33 @@ export default function Home() {
         </div>
       </main>
     </div>
+=======
+    <HomeLayout {...baseOptions()}>
+      <div className="p-4 flex flex-col items-center justify-center text-center flex-1">
+        <h1 className="text-3xl font-bold mb-4">Dynamic Documentation Viewer</h1>
+        <p className="text-fd-muted-foreground mb-6 max-w-2xl">
+          A modern documentation frontend that dynamically fetches and renders MDX files from your backend API. 
+          Built with React, TypeScript, Vite, and Fumadocs.
+        </p>
+        <div className="flex gap-4">
+          <Link
+            className="text-sm bg-fd-primary text-fd-primary-foreground rounded-full font-medium px-6 py-3 hover:opacity-90 transition-opacity"
+            to="/docs"
+          >
+            Browse Documentation
+          </Link>
+          <Link
+            className="text-sm border border-fd-border rounded-full font-medium px-6 py-3 hover:bg-fd-muted transition-colors"
+            to="/docs"
+          >
+            View All Docs
+          </Link>
+        </div>
+        <div className="mt-8 text-sm text-fd-muted-foreground">
+          <p>Features: Dynamic MDX rendering • Responsive sidebar • Real-time refresh • Error handling</p>
+        </div>
+      </div>
+    </HomeLayout>
+>>>>>>> 4e2f2dc (Implement dynamic documentation viewer with MDX support, including sidebar navigation, document fetching from backend API, and error handling. Add new components for document viewing and sidebar, update routing, and enhance README with features and usage instructions.)
   );
 }

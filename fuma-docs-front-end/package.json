@@ -9,6 +9,8 @@
     "typecheck": "react-router typegen && tsc"
   },
   "dependencies": {
+    "@mdx-js/mdx": "^3.1.1",
+    "@mdx-js/react": "^3.1.1",
     "@react-router/node": "^7.8.2",
     "@react-router/serve": "^7.8.2",
     "@reduxjs/toolkit": "^2.9.0",
