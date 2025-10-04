@@ -7,6 +7,8 @@ import {
   ScrollRestoration,
 } from 'react-router';
 import { RootProvider } from 'fumadocs-ui/provider/react-router';
+import { Provider } from 'react-redux';
+import { store } from './store/store';
 import type { Route } from './+types/root';
 import './app.css';
 
@@ -33,7 +35,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body className="flex flex-col min-h-screen">
-        <RootProvider>{children}</RootProvider>
+        <Provider store={store}>
+          <RootProvider>{children}</RootProvider>
+        </Provider>
         <ScrollRestoration />
         <Scripts />
       </body>
