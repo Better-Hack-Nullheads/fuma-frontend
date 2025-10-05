@@ -4,8 +4,8 @@ import { useNavigate } from 'react-router';
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: 'AutoDoc - Sign In' },
-    { name: 'description', content: 'Sign in to access AutoDoc' },
+    { title: 'Dynamic Documentation Viewer' },
+    { name: 'description', content: 'Open documentation viewer for dynamic content' },
   ];
 }
 
@@ -13,14 +13,17 @@ export default function Home() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Redirect to signin page
-    navigate('/signin');
+    // Redirect to docs page
+    navigate('/docs');
   }, [navigate]);
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center">
       <div className="text-center">
-        <p className="text-fd-muted-foreground">Redirecting to sign in...</p>
+        <h1 className="text-4xl font-bold text-fd-foreground mb-4">
+          Dynamic Documentation Viewer
+        </h1>
+        <p className="text-fd-muted-foreground">Redirecting to documentation...</p>
       </div>
     </div>
   );

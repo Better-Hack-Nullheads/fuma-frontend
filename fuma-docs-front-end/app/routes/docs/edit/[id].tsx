@@ -38,18 +38,14 @@ export default function EditDocPage() {
 
   // Update form when current doc changes
   useEffect(() => {
-    if (currentDoc.content) {
-      // Find the full document data from docs list
-      const fullDoc = docs.find(doc => doc._id === id);
-      if (fullDoc) {
-        setFormData({
-          title: fullDoc.title,
-          description: fullDoc.description,
-          mdxContent: fullDoc.mdxContent
-        });
-      }
+    if (currentDoc) {
+      setFormData({
+        title: currentDoc.metadata.moduleName || currentDoc.source || '',
+        description: `${currentDoc.provider} • ${currentDoc.model}`,
+        mdxContent: currentDoc.content
+      });
     }
-  }, [currentDoc, docs, id]);
+  }, [currentDoc]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -67,9 +63,7 @@ export default function EditDocPage() {
       await dispatch(updateDoc({ 
         id, 
         data: {
-          title: formData.title,
-          description: formData.description,
-          mdxContent: formData.mdxContent
+          content: formData.mdxContent
         }
       })).unwrap();
       
@@ -84,7 +78,7 @@ export default function EditDocPage() {
     navigate(`/docs/${id}`);
   };
 
-  if (error && !currentDoc.content) {
+  if (error && !currentDoc) {
     return (
       <DocsLayout {...baseOptions()} tree={{ name: 'docs', children: [] } as PageTree.Root}>
         <div className="flex">
@@ -149,9 +143,8 @@ export default function EditDocPage() {
                   id="title"
                   name="title"
                   value={formData.title}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  required
+                  readOnly
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-600"
                 />
               </div>
 
@@ -164,9 +157,8 @@ export default function EditDocPage() {
                   id="description"
                   name="description"
                   value={formData.description}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  required
+                  readOnly
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-600"
                 />
               </div>
 

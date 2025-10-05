@@ -91,8 +91,7 @@ app/
   - Paragraphs
 
 ### API Configuration
-- Modify `app/lib/api.ts` to change API endpoints
-- Add authentication headers if needed
+- Modify `app/lib/axiosInstance.ts` to change API endpoints
 - Implement caching or other optimizations
 
 ## Development

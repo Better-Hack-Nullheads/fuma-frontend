@@ -3,14 +3,25 @@ import axiosInstance from "@/lib/axiosInstance";
 
 export interface DocItem {
   _id: string;
-  mdxContent: string;
-  title: string;
-  description: string;
-  __v: number;
+  content: string;
+  source: string;
+  provider: string;
+  model: string;
+  timestamp: string;
+  metadata: {
+    framework?: string;
+    moduleName?: string;
+    totalRoutes?: number;
+    source?: string;
+    runId?: string;
+    runTimestamp?: string;
+    chunkTimestamp?: string;
+    projectPath?: string;
+  };
   createdAt: string;
   updatedAt: string;
-  runId?: string;
-  chunkTime?: string;
+  // Add computed id field that uses timestamp
+  id: string;
 }
 
 export interface ChangelogEntry {
@@ -20,17 +31,14 @@ export interface ChangelogEntry {
 }
 
 export interface DocumentStats {
-  totalCount: number;
+  totalCount: number | { count: number };
   latestDocuments: DocItem[];
   chunkTimes: string[];
 }
 
 interface DocsState {
   docs: DocItem[];
-  currentDoc: {
-    id: string | null;
-    content: string | null;
-  };
+  currentDoc: DocItem | null;
   changelog: ChangelogEntry[];
   stats: DocumentStats | null;
   loading: {
@@ -44,10 +52,7 @@ interface DocsState {
 
 const initialState: DocsState = {
   docs: [],
-  currentDoc: {
-    id: null,
-    content: null,
-  },
+  currentDoc: null,
   changelog: [],
   stats: null,
   loading: {
@@ -62,15 +67,31 @@ const initialState: DocsState = {
 // 🔸 Fetch latest documents thunk
 export const fetchDocsList = createAsyncThunk<
   DocItem[], // return type
-  { limit?: number } | void, // argument type (optional limit)
+  void, // argument type
   { rejectValue: string }
->("docs/fetchDocsList", async (params, { rejectWithValue }) => {
+>("docs/fetchDocsList", async (_, { rejectWithValue }) => {
   try {
-    const limit = params?.limit || 10;
-    console.log('Making API request to:', axiosInstance.defaults.baseURL + `/documents/latest?limit=${limit}`);
-    const response = await axiosInstance.get(`/documents/latest?limit=${limit}`);
+    // First get all available chunk times
+    console.log('Fetching chunk times...');
+    const chunkTimesResponse = await axiosInstance.get('/documents/chunk-times');
+    const chunkTimes = Array.isArray(chunkTimesResponse.data) ? chunkTimesResponse.data : [];
+    
+    if (chunkTimes.length === 0) {
+      console.log('No chunk times available');
+      return [];
+    }
+    
+    // Get the latest timestamp (assuming they're sorted, take the last one)
+    const latestTimestamp = chunkTimes[chunkTimes.length - 1];
+    console.log('Latest timestamp:', latestTimestamp);
+    
+    // Fetch documents from the latest timestamp
+    console.log('Fetching documents from latest timestamp...');
+    const response = await axiosInstance.get(`/documents/chunk/${latestTimestamp}`);
     console.log('API response:', response.data);
-    return Array.isArray(response.data) ? response.data : [];
+    const docs = Array.isArray(response.data) ? response.data : [];
+    // Add computed id field using timestamp
+    return docs.map(doc => ({ ...doc, id: doc.timestamp }));
   } catch (error: any) {
     console.error('API error:', error);
     const message =
@@ -81,14 +102,15 @@ export const fetchDocsList = createAsyncThunk<
 
 // 🔸 Fetch single document thunk
 export const fetchDocById = createAsyncThunk<
-  { id: string; content: string }, // return type
-  string, // argument type (document ID)
+  DocItem, // return type
+  string, // argument type (MongoDB document _id)
   { rejectValue: string }
->("docs/fetchDocById", async (id, { rejectWithValue }) => {
+>("docs/fetchDocById", async (_id, { rejectWithValue }) => {
   try {
-    const response = await axiosInstance.get(`/documents/${id}`);
+    const response = await axiosInstance.get(`/documents/${_id}`);
     const doc = response.data;
-    return { id, content: doc.mdxContent };
+    // Add computed id field using timestamp
+    return { ...doc, id: doc.timestamp };
   } catch (error: any) {
     const message =
       error.response?.data?.message || "Failed to fetch document.";
@@ -99,14 +121,16 @@ export const fetchDocById = createAsyncThunk<
 // 🔸 Update document thunk
 export const updateDoc = createAsyncThunk<
   DocItem, // return type
-  { id: string; data: Partial<DocItem> }, // argument type
+  { id: string; data: Partial<DocItem> }, // argument type (id is now _id)
   { rejectValue: string }
 >("docs/updateDoc", async ({ id, data }, { rejectWithValue }) => {
   try {
     console.log('Updating document:', id, data);
-    const response = await axiosInstance.patch(`/documents/${id}`, data);
+    const response = await axiosInstance.patch(`/documents/${id}/content`, data);
     console.log('Update response:', response.data);
-    return response.data;
+    const doc = response.data;
+    // Add computed id field using timestamp
+    return { ...doc, id: doc.timestamp };
   } catch (error: any) {
     console.error('Update error:', error);
     const message =
@@ -122,16 +146,25 @@ export const fetchDocumentStats = createAsyncThunk<
   { rejectValue: string }
 >("docs/fetchDocumentStats", async (_, { rejectWithValue }) => {
   try {
-    const [countResponse, latestResponse, chunkTimesResponse] = await Promise.all([
+    const [countResponse, chunkTimesResponse] = await Promise.all([
       axiosInstance.get("/documents/count"),
-      axiosInstance.get("/documents/latest?limit=10"),
       axiosInstance.get("/documents/chunk-times")
     ]);
 
+    const chunkTimes = Array.isArray(chunkTimesResponse.data) ? chunkTimesResponse.data : [];
+    let latestDocuments: any[] = [];
+
+    // If we have chunk times, get documents from the latest timestamp
+    if (chunkTimes.length > 0) {
+      const latestTimestamp = chunkTimes[chunkTimes.length - 1];
+      const latestResponse = await axiosInstance.get(`/documents/chunk/${latestTimestamp}`);
+      latestDocuments = Array.isArray(latestResponse.data) ? latestResponse.data : [];
+    }
+
     return {
-      totalCount: countResponse.data,
-      latestDocuments: Array.isArray(latestResponse.data) ? latestResponse.data : [],
-      chunkTimes: Array.isArray(chunkTimesResponse.data) ? chunkTimesResponse.data : []
+      totalCount: typeof countResponse.data === 'object' ? countResponse.data.count : countResponse.data,
+      latestDocuments,
+      chunkTimes
     };
   } catch (error: any) {
     const message = error.response?.data?.message || "Failed to fetch document stats.";
@@ -201,17 +234,11 @@ const docsSlice = createSlice({
       state.error = null;
     },
     clearCurrentDoc: (state) => {
-      state.currentDoc = {
-        id: null,
-        content: null,
-      };
+      state.currentDoc = null;
     },
     resetDocsState: (state) => {
       state.docs = [];
-      state.currentDoc = {
-        id: null,
-        content: null,
-      };
+      state.currentDoc = null;
       state.changelog = [];
       state.stats = null;
       state.loading = {
@@ -247,7 +274,7 @@ const docsSlice = createSlice({
         state.loading.currentDoc = true;
         state.error = null;
       })
-      .addCase(fetchDocById.fulfilled, (state, action: PayloadAction<{ id: string; content: string }>) => {
+      .addCase(fetchDocById.fulfilled, (state, action: PayloadAction<DocItem>) => {
         state.loading.currentDoc = false;
         state.currentDoc = action.payload;
         state.error = null;
@@ -269,8 +296,8 @@ const docsSlice = createSlice({
           state.docs[index] = action.payload;
         }
         // Update current doc if it's the same document
-        if (state.currentDoc.id === action.payload._id) {
-          state.currentDoc.content = action.payload.mdxContent;
+        if (state.currentDoc && state.currentDoc._id === action.payload._id) {
+          state.currentDoc = action.payload;
         }
         state.error = null;
       })

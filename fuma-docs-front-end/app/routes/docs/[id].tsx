@@ -65,7 +65,7 @@ export default function DocPage() {
     );
   }
 
-  if (!currentDoc.content) {
+  if (!currentDoc) {
     return (
       <DocsLayout {...baseOptions()} tree={{ name: 'docs', children: [] } as PageTree.Root}>
         <div className="flex">
@@ -89,10 +89,10 @@ export default function DocPage() {
             <div className="mb-6 flex justify-between items-center">
               <div>
                 <h1 className="text-2xl font-bold mb-2">
-                  {docs.find(doc => doc._id === id)?.title || 'Document'}
+                  {currentDoc.metadata.moduleName || currentDoc.source || 'Document'}
                 </h1>
                 <p className="text-gray-600">
-                  {docs.find(doc => doc._id === id)?.description || ''}
+                  {currentDoc.provider} • {currentDoc.model}
                 </p>
               </div>
               <Link

@@ -93,8 +93,8 @@ export default function DocsIndex() {
                   to={`/docs/${doc._id}`}
                   className="block p-6 border border-gray-200 rounded-lg hover:border-blue-300 hover:shadow-md transition-all"
                 >
-                  <h2 className="text-xl font-semibold mb-2">{doc.title}</h2>
-                  <p className="text-gray-600 mb-2">{doc.description}</p>
+                  <h2 className="text-xl font-semibold mb-2">{doc.metadata.moduleName || doc.source}</h2>
+                  <p className="text-gray-600 mb-2">{doc.provider} • {doc.model}</p>
                   <p className="text-sm text-gray-500">Created: {new Date(doc.createdAt).toLocaleDateString()}</p>
                 </Link>
               ))}

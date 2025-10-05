@@ -87,7 +87,7 @@ export function Sidebar({ docs, currentId, onRefresh, showChangelogTab = true }:
                     ? 'bg-blue-100 text-blue-700 border border-blue-200'
                     : 'text-gray-700 hover:bg-gray-100'
                 }`}
-                title={isCollapsed ? doc.title : undefined}
+                title={isCollapsed ? doc.metadata.moduleName || doc.source : undefined}
               >
                 <div className="flex items-center">
                   <svg className="w-4 h-4 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -95,8 +95,8 @@ export function Sidebar({ docs, currentId, onRefresh, showChangelogTab = true }:
                   </svg>
                   {!isCollapsed && (
                     <div className="min-w-0 flex-1">
-                      <div className="text-sm font-medium truncate">{doc.title}</div>
-                      <div className="text-xs text-gray-500 truncate">{doc.description}</div>
+                      <div className="text-sm font-medium truncate">{doc.metadata.moduleName || doc.source}</div>
+                      <div className="text-xs text-gray-500 truncate">{doc.provider} • {doc.model}</div>
                     </div>
                   )}
                 </div>

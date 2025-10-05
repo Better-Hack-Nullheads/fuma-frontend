@@ -60,7 +60,7 @@ export function Changelog({ onDocumentSelect }: ChangelogProps) {
         
         {stats && (
           <div className="mt-3 text-sm text-gray-600">
-            <p>Total Documents: <span className="font-semibold">{stats.totalCount}</span></p>
+            <p>Total Documents: <span className="font-semibold">{typeof stats.totalCount === 'object' ? stats.totalCount.count : stats.totalCount}</span></p>
             <p>Available Versions: <span className="font-semibold">{stats.chunkTimes.length}</span></p>
           </div>
         )}
@@ -132,8 +132,8 @@ export function Changelog({ onDocumentSelect }: ChangelogProps) {
                           onClick={() => onDocumentSelect?.(doc)}
                           className="block w-full text-left p-2 text-xs text-gray-600 hover:text-gray-800 hover:bg-gray-50 rounded"
                         >
-                          <div className="truncate font-medium">{doc.title}</div>
-                          <div className="truncate text-gray-500">{doc.description}</div>
+                          <div className="truncate font-medium">{doc.metadata.moduleName || doc.source}</div>
+                          <div className="truncate text-gray-500">{doc.provider} • {doc.model}</div>
                         </button>
                       ))}
                     </div>
