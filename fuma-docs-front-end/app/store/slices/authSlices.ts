@@ -8,7 +8,8 @@ interface RegisterPayload {
 }
 
 interface SigninPayload {
-  apiKey: string;
+  email: string;
+  password: string;
 }
 
 interface AuthState {
@@ -46,11 +47,11 @@ export const signinUser = createAsyncThunk<
   { rejectValue: string }
 >("auth/signinUser", async (data, { rejectWithValue }) => {
   try {
-    const response = await axiosInstance.post("/autodoc/signin", data);
+    const response = await axiosInstance.post("/autodoc/login", data);
     return response.data.apiKey;
   } catch (error: any) {
     const message =
-      error.response?.data?.message || "Invalid API key. Please try again.";
+      error.response?.data?.message || "Invalid credentials. Please try again.";
     return rejectWithValue(message);
   }
 });
