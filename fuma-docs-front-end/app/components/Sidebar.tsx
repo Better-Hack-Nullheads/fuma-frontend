@@ -13,19 +13,19 @@ export function Sidebar({ docs, currentId, onRefresh, showChangelogTab = true }:
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   return (
-    <div className={`bg-gray-50 border-r border-gray-200 transition-all duration-300 ${
+    <div className={`bg-gray-50 dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 transition-all duration-300 ${
       isCollapsed ? 'w-16' : 'w-80'
     }`}>
-      <div className="p-4 border-b border-gray-200">
+      <div className="p-4 border-b border-gray-200 dark:border-gray-700">
         <div className="flex items-center justify-between">
           {!isCollapsed && (
-            <h2 className="text-lg font-semibold text-gray-800">Documents</h2>
+            <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200">Documents</h2>
           )}
           <div className="flex items-center gap-2">
             {onRefresh && !isCollapsed && (
               <button
                 onClick={onRefresh}
-                className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-200 rounded"
+                className="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700 rounded"
                 title="Refresh documents"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -35,7 +35,7 @@ export function Sidebar({ docs, currentId, onRefresh, showChangelogTab = true }:
             )}
             <button
               onClick={() => setIsCollapsed(!isCollapsed)}
-              className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-200 rounded"
+              className="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700 rounded"
               title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -48,13 +48,13 @@ export function Sidebar({ docs, currentId, onRefresh, showChangelogTab = true }:
 
       <div className="overflow-y-auto h-[calc(100vh-80px)]">
         {showChangelogTab && (
-          <div className="p-2 border-b border-gray-200">
+          <div className="p-2 border-b border-gray-200 dark:border-gray-700">
             <Link
               to="/docs/changelog"
               className={`block p-3 rounded-lg mb-1 transition-colors ${
                 currentId === 'changelog'
-                  ? 'bg-blue-100 text-blue-700 border border-blue-200'
-                  : 'text-gray-700 hover:bg-gray-100'
+                  ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700'
+                  : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
               }`}
             >
               <div className="flex items-center">
@@ -64,7 +64,7 @@ export function Sidebar({ docs, currentId, onRefresh, showChangelogTab = true }:
                 {!isCollapsed && (
                   <div className="min-w-0 flex-1">
                     <div className="text-sm font-medium">Changelog</div>
-                    <div className="text-xs text-gray-500">Version History</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400">Version History</div>
                   </div>
                 )}
               </div>
@@ -73,7 +73,7 @@ export function Sidebar({ docs, currentId, onRefresh, showChangelogTab = true }:
         )}
 
         {docs.length === 0 ? (
-          <div className="p-4 text-center text-gray-500">
+          <div className="p-4 text-center text-gray-500 dark:text-gray-400">
             <p className="text-sm">No documents available</p>
           </div>
         ) : (
@@ -84,8 +84,8 @@ export function Sidebar({ docs, currentId, onRefresh, showChangelogTab = true }:
                 to={`/docs/${doc._id}`}
                 className={`block p-3 rounded-lg mb-1 transition-colors ${
                   currentId === doc._id
-                    ? 'bg-blue-100 text-blue-700 border border-blue-200'
-                    : 'text-gray-700 hover:bg-gray-100'
+                    ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700'
+                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
                 }`}
                 title={isCollapsed ? doc.metadata.moduleName || doc.source : undefined}
               >
@@ -96,7 +96,7 @@ export function Sidebar({ docs, currentId, onRefresh, showChangelogTab = true }:
                   {!isCollapsed && (
                     <div className="min-w-0 flex-1">
                       <div className="text-sm font-medium truncate">{doc.metadata.moduleName || doc.source}</div>
-                      <div className="text-xs text-gray-500 truncate">{doc.provider} • {doc.model}</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400 truncate">{doc.provider} • {doc.model}</div>
                     </div>
                   )}
                 </div>
