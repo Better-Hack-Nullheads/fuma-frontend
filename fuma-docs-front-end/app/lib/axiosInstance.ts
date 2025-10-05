@@ -1,13 +1,13 @@
-import axios from "axios";
+import axios from 'axios'
 
 // Use import.meta.env for client-side access to env variables
-const API_URL = "http://localhost:3015";
+const API_URL = 'http://localhost:3000'
 
 const axiosInstance = axios.create({
-  baseURL: API_URL,
-  headers: {
-    "Content-Type": "application/json",
-  },
-});
+    baseURL: API_URL,
+    headers: {
+        'Content-Type': 'application/json',
+    },
+})
 
-export default axiosInstance;
+export default axiosInstance
