@@ -88,7 +88,7 @@ export default function EditDocPage() {
     return (
       <DocsLayout {...baseOptions()} tree={{ name: 'docs', children: [] } as PageTree.Root}>
         <div className="flex">
-          <Sidebar docs={docs} currentId={id} />
+          <Sidebar docs={docs} currentId={id} showChangelogTab={true} />
           <div className="flex-1 flex flex-col items-center justify-center min-h-[400px] p-8">
             <div className="text-center">
               <h1 className="text-2xl font-bold text-red-600 mb-4">Error Loading Document</h1>
@@ -110,7 +110,7 @@ export default function EditDocPage() {
     return (
       <DocsLayout {...baseOptions()} tree={{ name: 'docs', children: [] } as PageTree.Root}>
         <div className="flex">
-          <Sidebar docs={docs} currentId={id} />
+          <Sidebar docs={docs} currentId={id} showChangelogTab={true} />
           <div className="flex-1 flex items-center justify-center min-h-[400px] p-8">
             <div className="text-center">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>

@@ -28,7 +28,7 @@ export default function DocsIndex() {
     return (
       <DocsLayout {...baseOptions()} tree={{ name: 'docs', children: [] } as PageTree.Root}>
         <div className="flex">
-          <Sidebar docs={[]} onRefresh={handleRefresh} />
+          <Sidebar docs={[]} onRefresh={handleRefresh} showChangelogTab={true} />
           <div className="flex-1 flex flex-col items-center justify-center min-h-[400px] p-8">
             <div className="text-center">
               <h1 className="text-2xl font-bold text-red-600 mb-4">Error Loading Documents</h1>
@@ -51,7 +51,7 @@ export default function DocsIndex() {
     return (
       <DocsLayout {...baseOptions()} tree={{ name: 'docs', children: [] } as PageTree.Root}>
         <div className="flex">
-          <Sidebar docs={[]} onRefresh={handleRefresh} />
+          <Sidebar docs={[]} onRefresh={handleRefresh} showChangelogTab={true} />
           <div className="flex-1 flex flex-col items-center justify-center min-h-[400px] p-8">
             <div className="text-center">
               <h1 className="text-2xl font-bold mb-4">No Documents Found</h1>
@@ -73,7 +73,7 @@ export default function DocsIndex() {
   return (
     <DocsLayout {...baseOptions()} tree={{ name: 'docs', children: [] } as PageTree.Root}>
       <div className="flex">
-        <Sidebar docs={docs} onRefresh={handleRefresh} />
+        <Sidebar docs={docs} onRefresh={handleRefresh} showChangelogTab={true} />
         <div className="flex-1">
           <div className="max-w-4xl mx-auto p-8">
             <div className="flex items-center justify-between mb-8">

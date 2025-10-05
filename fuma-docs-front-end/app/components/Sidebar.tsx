@@ -6,9 +6,10 @@ interface SidebarProps {
   docs: DocItem[];
   currentId?: string;
   onRefresh?: () => void;
+  showChangelogTab?: boolean;
 }
 
-export function Sidebar({ docs, currentId, onRefresh }: SidebarProps) {
+export function Sidebar({ docs, currentId, onRefresh, showChangelogTab = true }: SidebarProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   return (
@@ -46,6 +47,31 @@ export function Sidebar({ docs, currentId, onRefresh }: SidebarProps) {
       </div>
 
       <div className="overflow-y-auto h-[calc(100vh-80px)]">
+        {showChangelogTab && (
+          <div className="p-2 border-b border-gray-200">
+            <Link
+              to="/docs/changelog"
+              className={`block p-3 rounded-lg mb-1 transition-colors ${
+                currentId === 'changelog'
+                  ? 'bg-blue-100 text-blue-700 border border-blue-200'
+                  : 'text-gray-700 hover:bg-gray-100'
+              }`}
+            >
+              <div className="flex items-center">
+                <svg className="w-4 h-4 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                {!isCollapsed && (
+                  <div className="min-w-0 flex-1">
+                    <div className="text-sm font-medium">Changelog</div>
+                    <div className="text-xs text-gray-500">Version History</div>
+                  </div>
+                )}
+              </div>
+            </Link>
+          </div>
+        )}
+
         {docs.length === 0 ? (
           <div className="p-4 text-center text-gray-500">
             <p className="text-sm">No documents available</p>
