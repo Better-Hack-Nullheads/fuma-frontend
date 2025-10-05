@@ -1,5 +1,5 @@
 import { Link } from 'react-router';
-import type { DocItem } from '@/lib/api';
+import type { DocItem } from '@/store/slices/docsSlice';
 import { useState } from 'react';
 
 interface SidebarProps {
@@ -54,14 +54,14 @@ export function Sidebar({ docs, currentId, onRefresh }: SidebarProps) {
           <nav className="p-2">
             {docs.map((doc) => (
               <Link
-                key={doc.id}
-                to={`/docs/${doc.id}`}
+                key={doc._id}
+                to={`/docs/${doc._id}`}
                 className={`block p-3 rounded-lg mb-1 transition-colors ${
-                  currentId === doc.id
+                  currentId === doc._id
                     ? 'bg-blue-100 text-blue-700 border border-blue-200'
                     : 'text-gray-700 hover:bg-gray-100'
                 }`}
-                title={isCollapsed ? doc.content : undefined}
+                title={isCollapsed ? doc.title : undefined}
               >
                 <div className="flex items-center">
                   <svg className="w-4 h-4 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -69,8 +69,8 @@ export function Sidebar({ docs, currentId, onRefresh }: SidebarProps) {
                   </svg>
                   {!isCollapsed && (
                     <div className="min-w-0 flex-1">
-                      <div className="text-sm font-medium truncate">{doc.content}</div>
-                      <div className="text-xs text-gray-500 truncate">ID: {doc.id}</div>
+                      <div className="text-sm font-medium truncate">{doc.title}</div>
+                      <div className="text-xs text-gray-500 truncate">{doc.description}</div>
                     </div>
                   )}
                 </div>

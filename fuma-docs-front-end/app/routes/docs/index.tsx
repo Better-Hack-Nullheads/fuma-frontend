@@ -1,35 +1,32 @@
-import { Link, useLoaderData, useRevalidator } from 'react-router';
-import { getDocsList } from '@/lib/api';
+import { Link } from 'react-router';
 import { DocsLayout } from 'fumadocs-ui/layouts/docs';
 import { baseOptions } from '@/lib/layout.shared';
 import { Sidebar } from '../../components/Sidebar';
 import { type PageTree } from 'fumadocs-core/server';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { fetchDocsList, clearError } from '@/store/slices/docsSlice';
+import { useEffect } from 'react';
 import type { Route } from './+types/index';
 
-export async function loader() {
-  try {
-    const docs = await getDocsList();
-    return { docs, error: null };
-  } catch (error) {
-    console.error('Error loading docs:', error);
-    return { 
-      docs: [], 
-      error: error instanceof Error ? error.message : 'Failed to load documents' 
-    };
-  }
-}
-
 export default function DocsIndex() {
-  const { docs, error } = useLoaderData<typeof loader>();
-  const revalidator = useRevalidator();
+  const dispatch = useAppDispatch();
+  const { docs, loading, error } = useAppSelector((state) => state.docs);
+
+  console.log('DocsIndex component rendered, state:', { docs, loading, error });
+
+  useEffect(() => {
+    console.log('Dispatching fetchDocsList...');
+    dispatch(fetchDocsList());
+  }, [dispatch]);
 
   const handleRefresh = () => {
-    revalidator.revalidate();
+    dispatch(clearError());
+    dispatch(fetchDocsList());
   };
 
   if (error) {
     return (
-      <DocsLayout {...baseOptions()} tree={{} as PageTree.Root}>
+      <DocsLayout {...baseOptions()} tree={{ name: 'docs', children: [] } as PageTree.Root}>
         <div className="flex">
           <Sidebar docs={[]} onRefresh={handleRefresh} />
           <div className="flex-1 flex flex-col items-center justify-center min-h-[400px] p-8">
@@ -38,9 +35,10 @@ export default function DocsIndex() {
               <p className="text-gray-600 mb-4">{error}</p>
               <button 
                 onClick={handleRefresh}
-                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                disabled={loading.docsList}
+                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {revalidator.state === 'loading' ? 'Retrying...' : 'Retry'}
+                {loading.docsList ? 'Retrying...' : 'Retry'}
               </button>
             </div>
           </div>
@@ -51,7 +49,7 @@ export default function DocsIndex() {
 
   if (docs.length === 0) {
     return (
-      <DocsLayout {...baseOptions()} tree={{} as PageTree.Root}>
+      <DocsLayout {...baseOptions()} tree={{ name: 'docs', children: [] } as PageTree.Root}>
         <div className="flex">
           <Sidebar docs={[]} onRefresh={handleRefresh} />
           <div className="flex-1 flex flex-col items-center justify-center min-h-[400px] p-8">
@@ -60,9 +58,10 @@ export default function DocsIndex() {
               <p className="text-gray-600 mb-4">No documents are available at the moment.</p>
               <button 
                 onClick={handleRefresh}
-                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                disabled={loading.docsList}
+                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {revalidator.state === 'loading' ? 'Refreshing...' : 'Refresh'}
+                {loading.docsList ? 'Refreshing...' : 'Refresh'}
               </button>
             </div>
           </div>
@@ -72,7 +71,7 @@ export default function DocsIndex() {
   }
 
   return (
-    <DocsLayout {...baseOptions()} tree={{} as PageTree.Root}>
+    <DocsLayout {...baseOptions()} tree={{ name: 'docs', children: [] } as PageTree.Root}>
       <div className="flex">
         <Sidebar docs={docs} onRefresh={handleRefresh} />
         <div className="flex-1">
@@ -81,21 +80,22 @@ export default function DocsIndex() {
               <h1 className="text-3xl font-bold">Documentation</h1>
               <button 
                 onClick={handleRefresh}
-                disabled={revalidator.state === 'loading'}
+                disabled={loading.docsList}
                 className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {revalidator.state === 'loading' ? 'Refreshing...' : 'Refresh Docs'}
+                {loading.docsList ? 'Refreshing...' : 'Refresh Docs'}
               </button>
             </div>
             <div className="grid gap-4">
               {docs.map((doc) => (
                 <Link
-                  key={doc.id}
-                  to={`/docs/${doc.id}`}
+                  key={doc._id}
+                  to={`/docs/${doc._id}`}
                   className="block p-6 border border-gray-200 rounded-lg hover:border-blue-300 hover:shadow-md transition-all"
                 >
-                  <h2 className="text-xl font-semibold mb-2">{doc.content}</h2>
-                  <p className="text-gray-600">ID: {doc.id}</p>
+                  <h2 className="text-xl font-semibold mb-2">{doc.title}</h2>
+                  <p className="text-gray-600 mb-2">{doc.description}</p>
+                  <p className="text-sm text-gray-500">Created: {new Date(doc.createdAt).toLocaleDateString()}</p>
                 </Link>
               ))}
             </div>

@@ -101,11 +101,9 @@ function SimpleMdxRenderer({ content }: { content: string }) {
 export function DocViewer({ content }: DocViewerProps) {
   return (
     <div className="flex-1 overflow-auto">
-      <div className="max-w-4xl mx-auto p-8">
-        <MDXProvider components={mdxComponents}>
-          <SimpleMdxRenderer content={content} />
-        </MDXProvider>
-      </div>
+      <MDXProvider components={mdxComponents}>
+        <SimpleMdxRenderer content={content} />
+      </MDXProvider>
     </div>
   );
 }
